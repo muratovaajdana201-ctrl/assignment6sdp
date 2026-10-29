@@ -185,4 +185,40 @@ public final class Visitors {
             return String.join(System.lineSeparator(), records);
         }
     }
+    public static class Co2ReportVisitor implements FleetVisitor {
+        private double totalCo2;
+
+        @Override
+        public void visitFleet(Fleet fleet) {
+            for (FleetElement child : fleet.getChildren()) {
+                child.accept(this);
+            }
+        }
+
+        @Override
+        public void visitDepot(Depot depot) {
+            for (FleetElement child : depot.getChildren()) {
+                child.accept(this);
+            }
+        }
+
+        @Override
+        public void visitTruck(Truck truck) {
+            totalCo2 += truck.getFuelLiters() * 2.68;
+        }
+
+        @Override
+        public void visitVan(Van van) {
+            totalCo2 += van.getFuelLiters() * 2.68;
+        }
+
+        @Override
+        public void visitDrone(Drone drone) {
+            totalCo2 += drone.getFuelLiters() * 1.10;
+        }
+
+        public double getTotalCo2() {
+            return totalCo2;
+        }
+    }
 }
