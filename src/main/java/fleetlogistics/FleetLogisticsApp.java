@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 import static fleetlogistics.FleetModel.*;
 import static fleetlogistics.ObserverSystem.*;
 import static fleetlogistics.Visitors.*;
-
+import static fleetlogistics.FleetServices.*;
 public class FleetLogisticsApp {
 
     public static void main(String[] args) throws InterruptedException {
@@ -70,6 +70,18 @@ public class FleetLogisticsApp {
         subject.subscribe(EventType.GEOFENCE_ALERT, aggregator);
         subject.subscribe(EventType.FUEL_LOW, aggregator);
 
+        GpsTracker gpsTracker = new GpsTracker(subject);
+        EtaService etaService = new EtaService(subject);
+        GeofenceMonitor geofenceMonitor = new GeofenceMonitor(subject);
+        FuelMonitor fuelMonitor = new FuelMonitor(subject);
+
+
+        gpsTracker.updateLocation("TR-101", 51.1694, 71.4491);
+        etaService.updateEta("VN-202", 35);
+        geofenceMonitor.reportBoundaryCrossing(
+                "DR-303", "North Zone", true);
+        fuelMonitor.reportFuelLevel("TR-101", 15.0);
+        fuelMonitor.reportFuelLevel("VN-202", 75.0);
         ExecutorService executor = Executors.newFixedThreadPool(3);
 
         executor.submit(() -> {
