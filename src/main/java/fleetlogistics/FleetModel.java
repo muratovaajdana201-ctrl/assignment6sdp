@@ -18,6 +18,7 @@ public final class FleetModel {
         void visitTruck(Truck truck);
         void visitVan(Van van);
         void visitDrone(Drone drone);
+        void visitElectricTruck(ElectricTruck truck);
     }
 
     public static class Fleet implements FleetElement {
@@ -81,6 +82,7 @@ public final class FleetModel {
             if (id == null || id.isBlank()) {
                 throw new IllegalArgumentException("Vehicle ID is required");
             }
+
             if (mileage < 0 || fuelLiters < 0) {
                 throw new IllegalArgumentException(
                         "Mileage and fuel cannot be negative");
@@ -105,6 +107,7 @@ public final class FleetModel {
     }
 
     public static class Truck extends Vehicle {
+
         public Truck(String id, double mileage, double fuelLiters) {
             super(id, mileage, fuelLiters);
         }
@@ -116,6 +119,7 @@ public final class FleetModel {
     }
 
     public static class Van extends Vehicle {
+
         public Van(String id, double mileage, double fuelLiters) {
             super(id, mileage, fuelLiters);
         }
@@ -127,6 +131,7 @@ public final class FleetModel {
     }
 
     public static class Drone extends Vehicle {
+
         public Drone(String id, double mileage, double fuelLiters) {
             super(id, mileage, fuelLiters);
         }
@@ -134,6 +139,18 @@ public final class FleetModel {
         @Override
         public void accept(FleetVisitor visitor) {
             visitor.visitDrone(this);
+        }
+    }
+
+    public static class ElectricTruck extends Vehicle {
+
+        public ElectricTruck(String id, double mileage, double fuelLiters) {
+            super(id, mileage, fuelLiters);
+        }
+
+        @Override
+        public void accept(FleetVisitor visitor) {
+            visitor.visitElectricTruck(this);
         }
     }
 }

@@ -10,7 +10,9 @@ public final class Visitors {
     private Visitors() {
     }
 
+
     public static class FuelCostVisitor implements FleetVisitor {
+
         private double totalCost;
 
         @Override
@@ -42,12 +44,20 @@ public final class Visitors {
             totalCost += drone.getFuelLiters() * 1.20;
         }
 
+        @Override
+        public void visitElectricTruck(ElectricTruck truck) {
+            totalCost += truck.getFuelLiters() * 0.0;
+        }
+
         public double getTotalCost() {
             return totalCost;
         }
     }
 
+
+
     public static class StatisticsVisitor implements FleetVisitor {
+
         private int vehicleCount;
         private double totalMileage;
 
@@ -85,6 +95,11 @@ public final class Visitors {
             count(drone);
         }
 
+        @Override
+        public void visitElectricTruck(ElectricTruck truck) {
+            count(truck);
+        }
+
         public int getVehicleCount() {
             return vehicleCount;
         }
@@ -93,6 +108,8 @@ public final class Visitors {
             return totalMileage;
         }
     }
+
+
 
     public static class MaintenanceFilterVisitor
             implements FleetVisitor {
@@ -134,17 +151,26 @@ public final class Visitors {
             check(drone);
         }
 
+        @Override
+        public void visitElectricTruck(ElectricTruck truck) {
+            check(truck);
+        }
+
         public List<String> getVehiclesDue() {
             return List.copyOf(vehiclesDue);
         }
     }
 
+
+
     public static class JsonExportVisitor implements FleetVisitor {
+
         private final List<String> records = new ArrayList<>();
 
         @Override
         public void visitFleet(Fleet fleet) {
             records.add("{\"fleet\":\"" + fleet.getName() + "\"}");
+
             for (FleetElement child : fleet.getChildren()) {
                 child.accept(this);
             }
@@ -153,17 +179,20 @@ public final class Visitors {
         @Override
         public void visitDepot(Depot depot) {
             records.add("{\"depot\":\"" + depot.getName() + "\"}");
+
             for (FleetElement child : depot.getChildren()) {
                 child.accept(this);
             }
         }
 
         private void addVehicle(Vehicle vehicle, String type) {
-            records.add("{\"type\":\"" + type
-                    + "\",\"id\":\"" + vehicle.getId()
-                    + "\",\"mileage\":" + vehicle.getMileage()
-                    + ",\"fuelLiters\":" + vehicle.getFuelLiters()
-                    + "}");
+            records.add(
+                    "{\"type\":\"" + type
+                            + "\",\"id\":\"" + vehicle.getId()
+                            + "\",\"mileage\":" + vehicle.getMileage()
+                            + ",\"fuelLiters\":" + vehicle.getFuelLiters()
+                            + "}"
+            );
         }
 
         @Override
@@ -181,11 +210,23 @@ public final class Visitors {
             addVehicle(drone, "Drone");
         }
 
+        @Override
+        public void visitElectricTruck(ElectricTruck truck) {
+            addVehicle(truck, "ElectricTruck");
+        }
+
         public String getJsonLines() {
-            return String.join(System.lineSeparator(), records);
+            return String.join(
+                    System.lineSeparator(),
+                    records
+            );
         }
     }
+
+
+
     public static class Co2ReportVisitor implements FleetVisitor {
+
         private double totalCo2;
 
         @Override
@@ -215,6 +256,11 @@ public final class Visitors {
         @Override
         public void visitDrone(Drone drone) {
             totalCo2 += drone.getFuelLiters() * 1.10;
+        }
+
+        @Override
+        public void visitElectricTruck(ElectricTruck truck) {
+            totalCo2 += truck.getFuelLiters() * 0.0;
         }
 
         public double getTotalCo2() {
